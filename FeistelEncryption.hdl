@@ -1,0 +1,423 @@
+CHIP FeistelEncryption {
+
+      IN plaintext[16], key[8];
+      OUT ciphertext[16];
+
+      PARTS:
+      // key cascading and wrap around
+      // k1v1
+      And(x=key[0], y=true, out=k1v1);
+      And(x=key[1], y=true, out=k1v2);
+      And(x=key[2], y=true, out=k1v3);
+      And(x=key[3], y=true, out=k1v4);
+      And(x=key[4], y=true, out=k1v5);
+      And(x=key[5], y=true, out=k1v6);
+      And(x=key[6], y=true, out=k1v7);
+      And(x=key[7], y=true, out=k1v0);
+
+      And(x=k1v0, y=true, out=k2v1);
+      And(x=k1v1, y=true, out=k2v2);
+      And(x=k1v2, y=true, out=k2v3);
+      And(x=k1v3, y=true, out=k2v4);
+      And(x=k1v4, y=true, out=k2v5);
+      And(x=k1v5, y=true, out=k2v6);
+      And(x=k1v6, y=true, out=k2v7);
+      And(x=k1v7, y=true, out=k2v0);
+
+      And(x=k2v0, y=true, out=k3v1);
+      And(x=k2v1, y=true, out=k3v2);
+      And(x=k2v2, y=true, out=k3v3);
+      And(x=k2v3, y=true, out=k3v4);
+      And(x=k2v4, y=true, out=k3v5);
+      And(x=k2v5, y=true, out=k3v6);
+      And(x=k2v6, y=true, out=k3v7);
+      And(x=k2v7, y=true, out=k3v0);
+
+      // Separate plaintext into L0 and R0
+      And(x=plaintext[0], y=true, out=R0v0);
+      And(x=plaintext[1], y=true, out=R0v1);
+      And(x=plaintext[2], y=true, out=R0v2);
+      And(x=plaintext[3], y=true, out=R0v3);
+      And(x=plaintext[4], y=true, out=R0v4);
+      And(x=plaintext[5], y=true, out=R0v5);
+      And(x=plaintext[6], y=true, out=R0v6);
+      And(x=plaintext[7], y=true, out=R0v7);
+
+      And(x=plaintext[8], y=true, out=L0v0);
+      And(x=plaintext[9], y=true, out=L0v1);
+      And(x=plaintext[10], y=true, out=L0v2);
+      And(x=plaintext[11], y=true, out=L0v3);
+      And(x=plaintext[12], y=true, out=L0v4);
+      And(x=plaintext[13], y=true, out=L0v5);
+      And(x=plaintext[14], y=true, out=L0v6);
+      And(x=plaintext[15], y=true, out=L0v7);
+
+      // Calculate all L values§
+      And(x=true, y=R0v0, out=L1v0);
+      And(x=true, y=R0v1, out=L1v1);
+      And(x=true, y=R0v2, out=L1v2);
+      And(x=true, y=R0v3, out=L1v3);
+      And(x=true, y=R0v4, out=L1v4);
+      And(x=true, y=R0v5, out=L1v5);
+      And(x=true, y=R0v6, out=L1v6);
+      And(x=true, y=R0v7, out=L1v7);
+
+      And(x=true, y=R1v0, out=L2v0);
+      And(x=true, y=R1v1, out=L2v1);
+      And(x=true, y=R1v2, out=L2v2);
+      And(x=true, y=R1v3, out=L2v3);
+      And(x=true, y=R1v4, out=L2v4);
+      And(x=true, y=R1v5, out=L2v5);
+      And(x=true, y=R1v6, out=L2v6);
+      And(x=true, y=R1v7, out=L2v7);
+
+      And(x=true, y=R2v0, out=L3v0);
+      And(x=true, y=R2v1, out=L3v1);
+      And(x=true, y=R2v2, out=L3v2);
+      And(x=true, y=R2v3, out=L3v3);
+      And(x=true, y=R2v4, out=L3v4);
+      And(x=true, y=R2v5, out=L3v5);
+      And(x=true, y=R2v6, out=L3v6);
+      And(x=true, y=R2v7, out=L3v7);
+
+      And(x=true, y=R3v0, out=L4v0);
+      And(x=true, y=R3v1, out=L4v1);
+      And(x=true, y=R3v2, out=L4v2);
+      And(x=true, y=R3v3, out=L4v3);
+      And(x=true, y=R3v4, out=L4v4);
+      And(x=true, y=R3v5, out=L4v5);
+      And(x=true, y=R3v6, out=L4v6);
+      And(x=true, y=R3v7, out=L4v7);
+
+      // R0 xor k0
+      Nand(x=R0v0, y=key[0], out=R0NandKey0v0);
+      Nand(x=R0v1, y=key[1], out=R0NandKey0v1);
+      Nand(x=R0v2, y=key[2], out=R0NandKey0v2);
+      Nand(x=R0v3, y=key[3], out=R0NandKey0v3);
+      Nand(x=R0v4, y=key[4], out=R0NandKey0v4);
+      Nand(x=R0v5, y=key[5], out=R0NandKey0v5);
+      Nand(x=R0v6, y=key[6], out=R0NandKey0v6);
+      Nand(x=R0v7, y=key[7], out=R0NandKey0v7);
+
+      Nand(x=R0v0, y=R0NandKey0v0, out=R0NandR0NandKey0v0);
+      Nand(x=R0v1, y=R0NandKey0v1, out=R0NandR0NandKey0v1);
+      Nand(x=R0v2, y=R0NandKey0v2, out=R0NandR0NandKey0v2);
+      Nand(x=R0v3, y=R0NandKey0v3, out=R0NandR0NandKey0v3);
+      Nand(x=R0v4, y=R0NandKey0v4, out=R0NandR0NandKey0v4);
+      Nand(x=R0v5, y=R0NandKey0v5, out=R0NandR0NandKey0v5);
+      Nand(x=R0v6, y=R0NandKey0v6, out=R0NandR0NandKey0v6);
+      Nand(x=R0v7, y=R0NandKey0v7, out=R0NandR0NandKey0v7);
+
+      Nand(x=R0NandKey0v0, y=key[0], out=R0andKey0Nandkey0v0);
+      Nand(x=R0NandKey0v1, y=key[1], out=R0andKey0Nandkey0v1);
+      Nand(x=R0NandKey0v2, y=key[2], out=R0andKey0Nandkey0v2);
+      Nand(x=R0NandKey0v3, y=key[3], out=R0andKey0Nandkey0v3);
+      Nand(x=R0NandKey0v4, y=key[4], out=R0andKey0Nandkey0v4);
+      Nand(x=R0NandKey0v5, y=key[5], out=R0andKey0Nandkey0v5);
+      Nand(x=R0NandKey0v6, y=key[6], out=R0andKey0Nandkey0v6);
+      Nand(x=R0NandKey0v7, y=key[7], out=R0andKey0Nandkey0v7);
+
+      Nand(x=R0NandR0NandKey0v0, y=R0andKey0Nandkey0v0, out=R0XorKey0v0);
+      Nand(x=R0NandR0NandKey0v1, y=R0andKey0Nandkey0v1, out=R0XorKey0v1);
+      Nand(x=R0NandR0NandKey0v2, y=R0andKey0Nandkey0v2, out=R0XorKey0v2);
+      Nand(x=R0NandR0NandKey0v3, y=R0andKey0Nandkey0v3, out=R0XorKey0v3);
+      Nand(x=R0NandR0NandKey0v4, y=R0andKey0Nandkey0v4, out=R0XorKey0v4);
+      Nand(x=R0NandR0NandKey0v5, y=R0andKey0Nandkey0v5, out=R0XorKey0v5);
+      Nand(x=R0NandR0NandKey0v6, y=R0andKey0Nandkey0v6, out=R0XorKey0v6);
+      Nand(x=R0NandR0NandKey0v7, y=R0andKey0Nandkey0v7, out=R0XorKey0v7);
+
+      //L0 Xor (R0XorKey0) = R1
+
+      Nand(x=L0v0, y=R0XorKey0v0, out=L0NandR0XorKey0v0);
+      Nand(x=L0v1, y=R0XorKey0v1, out=L0NandR0XorKey0v1);
+      Nand(x=L0v2, y=R0XorKey0v2, out=L0NandR0XorKey0v2);
+      Nand(x=L0v3, y=R0XorKey0v3, out=L0NandR0XorKey0v3);
+      Nand(x=L0v4, y=R0XorKey0v4, out=L0NandR0XorKey0v4);
+      Nand(x=L0v5, y=R0XorKey0v5, out=L0NandR0XorKey0v5);
+      Nand(x=L0v6, y=R0XorKey0v6, out=L0NandR0XorKey0v6);
+      Nand(x=L0v7, y=R0XorKey0v7, out=L0NandR0XorKey0v7);
+
+      Nand(x=L0v0, y=L0NandR0XorKey0v0, out=L0NandL0NandR0XorKey0v0);
+      Nand(x=L0v1, y=L0NandR0XorKey0v1, out=L0NandL0NandR0XorKey0v1);
+      Nand(x=L0v2, y=L0NandR0XorKey0v2, out=L0NandL0NandR0XorKey0v2);
+      Nand(x=L0v3, y=L0NandR0XorKey0v3, out=L0NandL0NandR0XorKey0v3);
+      Nand(x=L0v4, y=L0NandR0XorKey0v4, out=L0NandL0NandR0XorKey0v4);
+      Nand(x=L0v5, y=L0NandR0XorKey0v5, out=L0NandL0NandR0XorKey0v5);
+      Nand(x=L0v6, y=L0NandR0XorKey0v6, out=L0NandL0NandR0XorKey0v6);
+      Nand(x=L0v7, y=L0NandR0XorKey0v7, out=L0NandL0NandR0XorKey0v7);
+
+      Nand(x=L0NandR0XorKey0v0, y=R0XorKey0v0, out=L0NandR0XorKey0NandR0XorKey0v0);
+      Nand(x=L0NandR0XorKey0v1, y=R0XorKey0v1, out=L0NandR0XorKey0NandR0XorKey0v1);
+      Nand(x=L0NandR0XorKey0v2, y=R0XorKey0v2, out=L0NandR0XorKey0NandR0XorKey0v2);
+      Nand(x=L0NandR0XorKey0v3, y=R0XorKey0v3, out=L0NandR0XorKey0NandR0XorKey0v3);
+      Nand(x=L0NandR0XorKey0v4, y=R0XorKey0v4, out=L0NandR0XorKey0NandR0XorKey0v4);
+      Nand(x=L0NandR0XorKey0v5, y=R0XorKey0v5, out=L0NandR0XorKey0NandR0XorKey0v5);
+      Nand(x=L0NandR0XorKey0v6, y=R0XorKey0v6, out=L0NandR0XorKey0NandR0XorKey0v6);
+      Nand(x=L0NandR0XorKey0v7, y=R0XorKey0v7, out=L0NandR0XorKey0NandR0XorKey0v7);
+
+      Nand(x=L0NandL0NandR0XorKey0v0, y=L0NandR0XorKey0NandR0XorKey0v0, out=R1v0);
+      Nand(x=L0NandL0NandR0XorKey0v1, y=L0NandR0XorKey0NandR0XorKey0v1, out=R1v1);
+      Nand(x=L0NandL0NandR0XorKey0v2, y=L0NandR0XorKey0NandR0XorKey0v2, out=R1v2);
+      Nand(x=L0NandL0NandR0XorKey0v3, y=L0NandR0XorKey0NandR0XorKey0v3, out=R1v3);
+      Nand(x=L0NandL0NandR0XorKey0v4, y=L0NandR0XorKey0NandR0XorKey0v4, out=R1v4);
+      Nand(x=L0NandL0NandR0XorKey0v5, y=L0NandR0XorKey0NandR0XorKey0v5, out=R1v5);
+      Nand(x=L0NandL0NandR0XorKey0v6, y=L0NandR0XorKey0NandR0XorKey0v6, out=R1v6);
+      Nand(x=L0NandL0NandR0XorKey0v7, y=L0NandR0XorKey0NandR0XorKey0v7, out=R1v7);
+
+      // Full cycle complete above, use R1 and R0 for everything
+
+      // Cycle 2 R1 = R1, L1 = L1.
+
+      // R1 xor k1
+      Nand(x=R1v0, y=k1v0, out=R1NandKey1v0);
+      Nand(x=R1v1, y=k1v1, out=R1NandKey1v1);
+      Nand(x=R1v2, y=k1v2, out=R1NandKey1v2);
+      Nand(x=R1v3, y=k1v3, out=R1NandKey1v3);
+      Nand(x=R1v4, y=k1v4, out=R1NandKey1v4);
+      Nand(x=R1v5, y=k1v5, out=R1NandKey1v5);
+      Nand(x=R1v6, y=k1v6, out=R1NandKey1v6);
+      Nand(x=R1v7, y=k1v7, out=R1NandKey1v7);
+
+      Nand(x=R1v0, y=R1NandKey1v0, out=R1NandR1NandKey1v0);
+      Nand(x=R1v1, y=R1NandKey1v1, out=R1NandR1NandKey1v1);
+      Nand(x=R1v2, y=R1NandKey1v2, out=R1NandR1NandKey1v2);
+      Nand(x=R1v3, y=R1NandKey1v3, out=R1NandR1NandKey1v3);
+      Nand(x=R1v4, y=R1NandKey1v4, out=R1NandR1NandKey1v4);
+      Nand(x=R1v5, y=R1NandKey1v5, out=R1NandR1NandKey1v5);
+      Nand(x=R1v6, y=R1NandKey1v6, out=R1NandR1NandKey1v6);
+      Nand(x=R1v7, y=R1NandKey1v7, out=R1NandR1NandKey1v7);
+
+      Nand(x=R1NandKey1v0, y=k1v0, out=R1andKey1Nandkey1v0);
+      Nand(x=R1NandKey1v1, y=k1v1, out=R1andKey1Nandkey1v1);
+      Nand(x=R1NandKey1v2, y=k1v2, out=R1andKey1Nandkey1v2);
+      Nand(x=R1NandKey1v3, y=k1v3, out=R1andKey1Nandkey1v3);
+      Nand(x=R1NandKey1v4, y=k1v4, out=R1andKey1Nandkey1v4);
+      Nand(x=R1NandKey1v5, y=k1v5, out=R1andKey1Nandkey1v5);
+      Nand(x=R1NandKey1v6, y=k1v6, out=R1andKey1Nandkey1v6);
+      Nand(x=R1NandKey1v7, y=k1v7, out=R1andKey1Nandkey1v7);
+
+      Nand(x=R1NandR1NandKey1v0, y=R1andKey1Nandkey1v0, out=R1XorKey1v0);
+      Nand(x=R1NandR1NandKey1v1, y=R1andKey1Nandkey1v1, out=R1XorKey1v1);
+      Nand(x=R1NandR1NandKey1v2, y=R1andKey1Nandkey1v2, out=R1XorKey1v2);
+      Nand(x=R1NandR1NandKey1v3, y=R1andKey1Nandkey1v3, out=R1XorKey1v3);
+      Nand(x=R1NandR1NandKey1v4, y=R1andKey1Nandkey1v4, out=R1XorKey1v4);
+      Nand(x=R1NandR1NandKey1v5, y=R1andKey1Nandkey1v5, out=R1XorKey1v5);
+      Nand(x=R1NandR1NandKey1v6, y=R1andKey1Nandkey1v6, out=R1XorKey1v6);
+      Nand(x=R1NandR1NandKey1v7, y=R1andKey1Nandkey1v7, out=R1XorKey1v7);
+
+      //L1 Xor (R1XorKey1) = R2
+
+      Nand(x=L1v0, y=R1XorKey1v0, out=L1NandR1XorKey1v0);
+      Nand(x=L1v1, y=R1XorKey1v1, out=L1NandR1XorKey1v1);
+      Nand(x=L1v2, y=R1XorKey1v2, out=L1NandR1XorKey1v2);
+      Nand(x=L1v3, y=R1XorKey1v3, out=L1NandR1XorKey1v3);
+      Nand(x=L1v4, y=R1XorKey1v4, out=L1NandR1XorKey1v4);
+      Nand(x=L1v5, y=R1XorKey1v5, out=L1NandR1XorKey1v5);
+      Nand(x=L1v6, y=R1XorKey1v6, out=L1NandR1XorKey1v6);
+      Nand(x=L1v7, y=R1XorKey1v7, out=L1NandR1XorKey1v7);
+
+      Nand(x=L1v0, y=L1NandR1XorKey1v0, out=L1NandL1NandR1XorKey1v0);
+      Nand(x=L1v1, y=L1NandR1XorKey1v1, out=L1NandL1NandR1XorKey1v1);
+      Nand(x=L1v2, y=L1NandR1XorKey1v2, out=L1NandL1NandR1XorKey1v2);
+      Nand(x=L1v3, y=L1NandR1XorKey1v3, out=L1NandL1NandR1XorKey1v3);
+      Nand(x=L1v4, y=L1NandR1XorKey1v4, out=L1NandL1NandR1XorKey1v4);
+      Nand(x=L1v5, y=L1NandR1XorKey1v5, out=L1NandL1NandR1XorKey1v5);
+      Nand(x=L1v6, y=L1NandR1XorKey1v6, out=L1NandL1NandR1XorKey1v6);
+      Nand(x=L1v7, y=L1NandR1XorKey1v7, out=L1NandL1NandR1XorKey1v7);
+
+      Nand(x=L1NandR1XorKey1v0, y=R1XorKey1v0, out=L1NandR1XorKey1NandR1XorKey1v0);
+      Nand(x=L1NandR1XorKey1v1, y=R1XorKey1v1, out=L1NandR1XorKey1NandR1XorKey1v1);
+      Nand(x=L1NandR1XorKey1v2, y=R1XorKey1v2, out=L1NandR1XorKey1NandR1XorKey1v2);
+      Nand(x=L1NandR1XorKey1v3, y=R1XorKey1v3, out=L1NandR1XorKey1NandR1XorKey1v3);
+      Nand(x=L1NandR1XorKey1v4, y=R1XorKey1v4, out=L1NandR1XorKey1NandR1XorKey1v4);
+      Nand(x=L1NandR1XorKey1v5, y=R1XorKey1v5, out=L1NandR1XorKey1NandR1XorKey1v5);
+      Nand(x=L1NandR1XorKey1v6, y=R1XorKey1v6, out=L1NandR1XorKey1NandR1XorKey1v6);
+      Nand(x=L1NandR1XorKey1v7, y=R1XorKey1v7, out=L1NandR1XorKey1NandR1XorKey1v7);
+
+      Nand(x=L1NandL1NandR1XorKey1v0, y=L1NandR1XorKey1NandR1XorKey1v0, out=R2v0);
+      Nand(x=L1NandL1NandR1XorKey1v1, y=L1NandR1XorKey1NandR1XorKey1v1, out=R2v1);
+      Nand(x=L1NandL1NandR1XorKey1v2, y=L1NandR1XorKey1NandR1XorKey1v2, out=R2v2);
+      Nand(x=L1NandL1NandR1XorKey1v3, y=L1NandR1XorKey1NandR1XorKey1v3, out=R2v3);
+      Nand(x=L1NandL1NandR1XorKey1v4, y=L1NandR1XorKey1NandR1XorKey1v4, out=R2v4);
+      Nand(x=L1NandL1NandR1XorKey1v5, y=L1NandR1XorKey1NandR1XorKey1v5, out=R2v5);
+      Nand(x=L1NandL1NandR1XorKey1v6, y=L1NandR1XorKey1NandR1XorKey1v6, out=R2v6);
+      Nand(x=L1NandL1NandR1XorKey1v7, y=L1NandR1XorKey1NandR1XorKey1v7, out=R2v7);
+
+      // Completed cycle 2
+      // Cycle 3:
+
+      // R2 xor k2
+      Nand(x=R2v0, y=k2v0, out=R2NandKey2v0);
+      Nand(x=R2v1, y=k2v1, out=R2NandKey2v1);
+      Nand(x=R2v2, y=k2v2, out=R2NandKey2v2);
+      Nand(x=R2v3, y=k2v3, out=R2NandKey2v3);
+      Nand(x=R2v4, y=k2v4, out=R2NandKey2v4);
+      Nand(x=R2v5, y=k2v5, out=R2NandKey2v5);
+      Nand(x=R2v6, y=k2v6, out=R2NandKey2v6);
+      Nand(x=R2v7, y=k2v7, out=R2NandKey2v7);
+
+      Nand(x=R2v0, y=R2NandKey2v0, out=R2NandR2NandKey2v0);
+      Nand(x=R2v1, y=R2NandKey2v1, out=R2NandR2NandKey2v1);
+      Nand(x=R2v2, y=R2NandKey2v2, out=R2NandR2NandKey2v2);
+      Nand(x=R2v3, y=R2NandKey2v3, out=R2NandR2NandKey2v3);
+      Nand(x=R2v4, y=R2NandKey2v4, out=R2NandR2NandKey2v4);
+      Nand(x=R2v5, y=R2NandKey2v5, out=R2NandR2NandKey2v5);
+      Nand(x=R2v6, y=R2NandKey2v6, out=R2NandR2NandKey2v6);
+      Nand(x=R2v7, y=R2NandKey2v7, out=R2NandR2NandKey2v7);
+
+      Nand(x=R2NandKey2v0, y=k2v0, out=R2andKey2Nandkey2v0);
+      Nand(x=R2NandKey2v1, y=k2v1, out=R2andKey2Nandkey2v1);
+      Nand(x=R2NandKey2v2, y=k2v2, out=R2andKey2Nandkey2v2);
+      Nand(x=R2NandKey2v3, y=k2v3, out=R2andKey2Nandkey2v3);
+      Nand(x=R2NandKey2v4, y=k2v4, out=R2andKey2Nandkey2v4);
+      Nand(x=R2NandKey2v5, y=k2v5, out=R2andKey2Nandkey2v5);
+      Nand(x=R2NandKey2v6, y=k2v6, out=R2andKey2Nandkey2v6);
+      Nand(x=R2NandKey2v7, y=k2v7, out=R2andKey2Nandkey2v7);
+
+      Nand(x=R2NandR2NandKey2v0, y=R2andKey2Nandkey2v0, out=R2XorKey2v0);
+      Nand(x=R2NandR2NandKey2v1, y=R2andKey2Nandkey2v1, out=R2XorKey2v1);
+      Nand(x=R2NandR2NandKey2v2, y=R2andKey2Nandkey2v2, out=R2XorKey2v2);
+      Nand(x=R2NandR2NandKey2v3, y=R2andKey2Nandkey2v3, out=R2XorKey2v3);
+      Nand(x=R2NandR2NandKey2v4, y=R2andKey2Nandkey2v4, out=R2XorKey2v4);
+      Nand(x=R2NandR2NandKey2v5, y=R2andKey2Nandkey2v5, out=R2XorKey2v5);
+      Nand(x=R2NandR2NandKey2v6, y=R2andKey2Nandkey2v6, out=R2XorKey2v6);
+      Nand(x=R2NandR2NandKey2v7, y=R2andKey2Nandkey2v7, out=R2XorKey2v7);
+
+      //L2 Xor (R2XorKey2) = R3
+
+      Nand(x=L2v0, y=R2XorKey2v0, out=L2NandR2XorKey2v0);
+      Nand(x=L2v1, y=R2XorKey2v1, out=L2NandR2XorKey2v1);
+      Nand(x=L2v2, y=R2XorKey2v2, out=L2NandR2XorKey2v2);
+      Nand(x=L2v3, y=R2XorKey2v3, out=L2NandR2XorKey2v3);
+      Nand(x=L2v4, y=R2XorKey2v4, out=L2NandR2XorKey2v4);
+      Nand(x=L2v5, y=R2XorKey2v5, out=L2NandR2XorKey2v5);
+      Nand(x=L2v6, y=R2XorKey2v6, out=L2NandR2XorKey2v6);
+      Nand(x=L2v7, y=R2XorKey2v7, out=L2NandR2XorKey2v7);
+
+      Nand(x=L2v0, y=L2NandR2XorKey2v0, out=L2NandL2NandR2XorKey2v0);
+      Nand(x=L2v1, y=L2NandR2XorKey2v1, out=L2NandL2NandR2XorKey2v1);
+      Nand(x=L2v2, y=L2NandR2XorKey2v2, out=L2NandL2NandR2XorKey2v2);
+      Nand(x=L2v3, y=L2NandR2XorKey2v3, out=L2NandL2NandR2XorKey2v3);
+      Nand(x=L2v4, y=L2NandR2XorKey2v4, out=L2NandL2NandR2XorKey2v4);
+      Nand(x=L2v5, y=L2NandR2XorKey2v5, out=L2NandL2NandR2XorKey2v5);
+      Nand(x=L2v6, y=L2NandR2XorKey2v6, out=L2NandL2NandR2XorKey2v6);
+      Nand(x=L2v7, y=L2NandR2XorKey2v7, out=L2NandL2NandR2XorKey2v7);
+
+      Nand(x=L2NandR2XorKey2v0, y=R2XorKey2v0, out=L2NandR2XorKey2NandR2XorKey2v0);
+      Nand(x=L2NandR2XorKey2v1, y=R2XorKey2v1, out=L2NandR2XorKey2NandR2XorKey2v1);
+      Nand(x=L2NandR2XorKey2v2, y=R2XorKey2v2, out=L2NandR2XorKey2NandR2XorKey2v2);
+      Nand(x=L2NandR2XorKey2v3, y=R2XorKey2v3, out=L2NandR2XorKey2NandR2XorKey2v3);
+      Nand(x=L2NandR2XorKey2v4, y=R2XorKey2v4, out=L2NandR2XorKey2NandR2XorKey2v4);
+      Nand(x=L2NandR2XorKey2v5, y=R2XorKey2v5, out=L2NandR2XorKey2NandR2XorKey2v5);
+      Nand(x=L2NandR2XorKey2v6, y=R2XorKey2v6, out=L2NandR2XorKey2NandR2XorKey2v6);
+      Nand(x=L2NandR2XorKey2v7, y=R2XorKey2v7, out=L2NandR2XorKey2NandR2XorKey2v7);
+
+      Nand(x=L2NandL2NandR2XorKey2v0, y=L2NandR2XorKey2NandR2XorKey2v0, out=R3v0);
+      Nand(x=L2NandL2NandR2XorKey2v1, y=L2NandR2XorKey2NandR2XorKey2v1, out=R3v1);
+      Nand(x=L2NandL2NandR2XorKey2v2, y=L2NandR2XorKey2NandR2XorKey2v2, out=R3v2);
+      Nand(x=L2NandL2NandR2XorKey2v3, y=L2NandR2XorKey2NandR2XorKey2v3, out=R3v3);
+      Nand(x=L2NandL2NandR2XorKey2v4, y=L2NandR2XorKey2NandR2XorKey2v4, out=R3v4);
+      Nand(x=L2NandL2NandR2XorKey2v5, y=L2NandR2XorKey2NandR2XorKey2v5, out=R3v5);
+      Nand(x=L2NandL2NandR2XorKey2v6, y=L2NandR2XorKey2NandR2XorKey2v6, out=R3v6);
+      Nand(x=L2NandL2NandR2XorKey2v7, y=L2NandR2XorKey2NandR2XorKey2v7, out=R3v7);
+
+      // Completed cycle 3
+      // Cycle 4
+
+      // R3 xor k3
+      Nand(x=R3v0, y=k3v0, out=R3NandKey3v0);
+      Nand(x=R3v1, y=k3v1, out=R3NandKey3v1);
+      Nand(x=R3v2, y=k3v2, out=R3NandKey3v2);
+      Nand(x=R3v3, y=k3v3, out=R3NandKey3v3);
+      Nand(x=R3v4, y=k3v4, out=R3NandKey3v4);
+      Nand(x=R3v5, y=k3v5, out=R3NandKey3v5);
+      Nand(x=R3v6, y=k3v6, out=R3NandKey3v6);
+      Nand(x=R3v7, y=k3v7, out=R3NandKey3v7);
+
+      Nand(x=R3v0, y=R3NandKey3v0, out=R3NandR3NandKey3v0);
+      Nand(x=R3v1, y=R3NandKey3v1, out=R3NandR3NandKey3v1);
+      Nand(x=R3v2, y=R3NandKey3v2, out=R3NandR3NandKey3v2);
+      Nand(x=R3v3, y=R3NandKey3v3, out=R3NandR3NandKey3v3);
+      Nand(x=R3v4, y=R3NandKey3v4, out=R3NandR3NandKey3v4);
+      Nand(x=R3v5, y=R3NandKey3v5, out=R3NandR3NandKey3v5);
+      Nand(x=R3v6, y=R3NandKey3v6, out=R3NandR3NandKey3v6);
+      Nand(x=R3v7, y=R3NandKey3v7, out=R3NandR3NandKey3v7);
+
+      Nand(x=R3NandKey3v0, y=k3v0, out=R3andKey3Nandkey3v0);
+      Nand(x=R3NandKey3v1, y=k3v1, out=R3andKey3Nandkey3v1);
+      Nand(x=R3NandKey3v2, y=k3v2, out=R3andKey3Nandkey3v2);
+      Nand(x=R3NandKey3v3, y=k3v3, out=R3andKey3Nandkey3v3);
+      Nand(x=R3NandKey3v4, y=k3v4, out=R3andKey3Nandkey3v4);
+      Nand(x=R3NandKey3v5, y=k3v5, out=R3andKey3Nandkey3v5);
+      Nand(x=R3NandKey3v6, y=k3v6, out=R3andKey3Nandkey3v6);
+      Nand(x=R3NandKey3v7, y=k3v7, out=R3andKey3Nandkey3v7);
+
+      Nand(x=R3NandR3NandKey3v0, y=R3andKey3Nandkey3v0, out=R3XorKey3v0);
+      Nand(x=R3NandR3NandKey3v1, y=R3andKey3Nandkey3v1, out=R3XorKey3v1);
+      Nand(x=R3NandR3NandKey3v2, y=R3andKey3Nandkey3v2, out=R3XorKey3v2);
+      Nand(x=R3NandR3NandKey3v3, y=R3andKey3Nandkey3v3, out=R3XorKey3v3);
+      Nand(x=R3NandR3NandKey3v4, y=R3andKey3Nandkey3v4, out=R3XorKey3v4);
+      Nand(x=R3NandR3NandKey3v5, y=R3andKey3Nandkey3v5, out=R3XorKey3v5);
+      Nand(x=R3NandR3NandKey3v6, y=R3andKey3Nandkey3v6, out=R3XorKey3v6);
+      Nand(x=R3NandR3NandKey3v7, y=R3andKey3Nandkey3v7, out=R3XorKey3v7);
+
+      //L1 Xor (R1XorKey1) = R2
+
+      Nand(x=L3v0, y=R3XorKey3v0, out=L3NandR3XorKey3v0);
+      Nand(x=L3v1, y=R3XorKey3v1, out=L3NandR3XorKey3v1);
+      Nand(x=L3v2, y=R3XorKey3v2, out=L3NandR3XorKey3v2);
+      Nand(x=L3v3, y=R3XorKey3v3, out=L3NandR3XorKey3v3);
+      Nand(x=L3v4, y=R3XorKey3v4, out=L3NandR3XorKey3v4);
+      Nand(x=L3v5, y=R3XorKey3v5, out=L3NandR3XorKey3v5);
+      Nand(x=L3v6, y=R3XorKey3v6, out=L3NandR3XorKey3v6);
+      Nand(x=L3v7, y=R3XorKey3v7, out=L3NandR3XorKey3v7);
+
+      Nand(x=L3v0, y=L3NandR3XorKey3v0, out=L3NandL3NandR3XorKey3v0);
+      Nand(x=L3v1, y=L3NandR3XorKey3v1, out=L3NandL3NandR3XorKey3v1);
+      Nand(x=L3v2, y=L3NandR3XorKey3v2, out=L3NandL3NandR3XorKey3v2);
+      Nand(x=L3v3, y=L3NandR3XorKey3v3, out=L3NandL3NandR3XorKey3v3);
+      Nand(x=L3v4, y=L3NandR3XorKey3v4, out=L3NandL3NandR3XorKey3v4);
+      Nand(x=L3v5, y=L3NandR3XorKey3v5, out=L3NandL3NandR3XorKey3v5);
+      Nand(x=L3v6, y=L3NandR3XorKey3v6, out=L3NandL3NandR3XorKey3v6);
+      Nand(x=L3v7, y=L3NandR3XorKey3v7, out=L3NandL3NandR3XorKey3v7);
+
+      Nand(x=L3NandR3XorKey3v0, y=R3XorKey3v0, out=L3NandR3XorKey3NandR3XorKey3v0);
+      Nand(x=L3NandR3XorKey3v1, y=R3XorKey3v1, out=L3NandR3XorKey3NandR3XorKey3v1);
+      Nand(x=L3NandR3XorKey3v2, y=R3XorKey3v2, out=L3NandR3XorKey3NandR3XorKey3v2);
+      Nand(x=L3NandR3XorKey3v3, y=R3XorKey3v3, out=L3NandR3XorKey3NandR3XorKey3v3);
+      Nand(x=L3NandR3XorKey3v4, y=R3XorKey3v4, out=L3NandR3XorKey3NandR3XorKey3v4);
+      Nand(x=L3NandR3XorKey3v5, y=R3XorKey3v5, out=L3NandR3XorKey3NandR3XorKey3v5);
+      Nand(x=L3NandR3XorKey3v6, y=R3XorKey3v6, out=L3NandR3XorKey3NandR3XorKey3v6);
+      Nand(x=L3NandR3XorKey3v7, y=R3XorKey3v7, out=L3NandR3XorKey3NandR3XorKey3v7);
+
+      Nand(x=L3NandL3NandR3XorKey3v0, y=L3NandR3XorKey3NandR3XorKey3v0, out=R4v0);
+      Nand(x=L3NandL3NandR3XorKey3v1, y=L3NandR3XorKey3NandR3XorKey3v1, out=R4v1);
+      Nand(x=L3NandL3NandR3XorKey3v2, y=L3NandR3XorKey3NandR3XorKey3v2, out=R4v2);
+      Nand(x=L3NandL3NandR3XorKey3v3, y=L3NandR3XorKey3NandR3XorKey3v3, out=R4v3);
+      Nand(x=L3NandL3NandR3XorKey3v4, y=L3NandR3XorKey3NandR3XorKey3v4, out=R4v4);
+      Nand(x=L3NandL3NandR3XorKey3v5, y=L3NandR3XorKey3NandR3XorKey3v5, out=R4v5);
+      Nand(x=L3NandL3NandR3XorKey3v6, y=L3NandR3XorKey3NandR3XorKey3v6, out=R4v6);
+      Nand(x=L3NandL3NandR3XorKey3v7, y=L3NandR3XorKey3NandR3XorKey3v7, out=R4v7);
+
+      // Combining into output
+      And(x=true, y=R4v0, out=ciphertext[0]);
+      And(x=true, y=R4v1, out=ciphertext[1]);
+      And(x=true, y=R4v2, out=ciphertext[2]);
+      And(x=true, y=R4v3, out=ciphertext[3]);
+      And(x=true, y=R4v4, out=ciphertext[4]);
+      And(x=true, y=R4v5, out=ciphertext[5]);
+      And(x=true, y=R4v6, out=ciphertext[6]);
+      And(x=true, y=R4v7, out=ciphertext[7]);
+
+      And(x=true, y=L4v0, out=ciphertext[8]);
+      And(x=true, y=L4v1, out=ciphertext[9]);
+      And(x=true, y=L4v2, out=ciphertext[10]);
+      And(x=true, y=L4v3, out=ciphertext[11]);
+      And(x=true, y=L4v4, out=ciphertext[12]);
+      And(x=true, y=L4v5, out=ciphertext[13]);
+      And(x=true, y=L4v6, out=ciphertext[14]);
+      And(x=true, y=L4v7, out=ciphertext[15]);
+
+
+
+}
